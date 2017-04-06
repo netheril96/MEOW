@@ -10,7 +10,7 @@ func TestIPShouldDirect(t *testing.T) {
 	initCNIPData()
 
 	blockedIPDomains := []string{
-		"youtube.com",
+		"gist.github.com",
 		"twitter.com",
 	}
 	for _, domain := range blockedIPDomains {
@@ -31,6 +31,7 @@ func TestIPShouldDirect(t *testing.T) {
 	directIPDomains := []string{
 		"baidu.com",
 		"www.ahut.edu.cn",
+		"bt.byr.cn",
 	}
 	for _, domain := range directIPDomains {
 		hostIPs, err := net.LookupIP(domain)

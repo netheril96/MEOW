@@ -1,6 +1,14 @@
 package main
 
+import (
+	"strings"
+)
+
 func ipShouldDirect(ip string) (direct bool) {
+	if strings.Contains(ip, ":") {
+		// IPv6 addresses are connected directly
+		return true
+	}
 	direct = false
 	defer func() {
 		if r := recover(); r != nil {
