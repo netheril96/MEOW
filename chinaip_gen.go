@@ -5,33 +5,21 @@ package main
 
 import (
 	"bufio"
-	"strconv"
+	"encoding/binary"
+	"errors"
 	"fmt"
 	"log"
-	"encoding/binary"
+	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
-	"net"
-	"errors"
 )
 
+// use china ip list database by ipip.net
 const (
-	apnicFile = "http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest"
+	apnicFile = "https://github.com/17mon/china_ip_list/raw/master/china_ip_list.txt"
 )
-
-// ip to long int
-func ip2long(ipstr string) (uint32, error) {
-	ip := net.ParseIP(ipstr)
-	if ip == nil {
-		return 0, errors.New("Invalid IP")
-	}
-	ip = ip.To4()
-	if ip == nil {
-		return 0, errors.New("Not IPv4")
-	}
-	return binary.BigEndian.Uint32(ip), nil
-}
 
 func main() {
 	resp, err := http.Get(apnicFile)
@@ -43,28 +31,30 @@ func main() {
 	}
 	defer resp.Body.Close()
 	scanner := bufio.NewScanner(resp.Body)
-	
-	start_list := []string{}
-	count_list := []string{}
+
+	startList := []string{}
+	countList := []string{}
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
-		parts := strings.Split(line, "|")
-		if len(parts) < 5 {
-			continue
+		parts := strings.Split(line, "/")
+		if len(parts) != 2 {
+			panic(errors.New("Invalid CIDR"))
 		}
-		if strings.ToLower(parts[1]) != "cn" || strings.ToLower(parts[2]) != "ipv4" {
-			continue
-		}
-		ip := parts[3]
-		count := parts[4]
-		ipLong, err := ip2long(ip)
+		ip := parts[0]
+		mask := parts[1]
+		count, err := cidrCalc(mask)
 		if err != nil {
 			panic(err)
-		}	
-		start_list = append(start_list, strconv.FormatUint(uint64(ipLong), 10))
-		count_list = append(count_list, count)
+		}
+
+		ipLong, err := ipToUint32(ip)
+		if err != nil {
+			panic(err)
+		}
+		startList = append(startList, strconv.FormatUint(uint64(ipLong), 10))
+		countList = append(countList, count)
 	}
 
 	file, err := os.OpenFile("chinaip_data.go", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
@@ -75,10 +65,41 @@ func main() {
 
 	fmt.Fprintln(file, "package main")
 	fmt.Fprint(file, "var CNIPDataStart = []uint32 {\n	")
-	fmt.Fprint(file, strings.Join(start_list, ",\n	"))
+	fmt.Fprint(file, strings.Join(startList, ",\n	"))
 	fmt.Fprintln(file, ",\n	}")
 
 	fmt.Fprint(file, "var CNIPDataNum = []uint{\n	")
-	fmt.Fprint(file, strings.Join(count_list, ",\n	"))
+	fmt.Fprint(file, strings.Join(countList, ",\n	"))
 	fmt.Fprintln(file, ",\n	}")
+}
+
+func cidrCalc(mask string) (string, error) {
+	i, _ := strconv.Atoi(mask)
+	if i > 32 {
+		return "", errors.New("Invalid Mask")
+	}
+	p := 32 - i
+	res := intPow2(p)
+	str := strconv.Itoa(res)
+	return str, nil
+}
+
+func intPow2(p int) int {
+	r := 1
+	for i := 0; i < p; i++ {
+		r *= 2
+	}
+	return r
+}
+
+func ipToUint32(ipstr string) (uint32, error) {
+	ip := net.ParseIP(ipstr)
+	if ip == nil {
+		return 0, errors.New("Invalid IP")
+	}
+	ip = ip.To4()
+	if ip == nil {
+		return 0, errors.New("Not IPv4")
+	}
+	return binary.BigEndian.Uint32(ip), nil
 }
