@@ -10,6 +10,7 @@ const (
 	directFname  = "direct.txt"
 	proxyFname   = "proxy.txt"
 	rejectFname  = "reject.txt"
+	CNIPFname    = "china_ip_list.txt"
 
 	newLine = "\r\n"
 )

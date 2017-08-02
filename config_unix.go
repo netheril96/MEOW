@@ -11,6 +11,7 @@ const (
 	directFname  = "direct"
 	proxyFname   = "proxy"
 	rejectFname  = "reject"
+	CNIPFname    = "china_ip_list"
 
 	newLine = "\n"
 )

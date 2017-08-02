@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/cyfdecyf/bufio"
 	"net"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/cyfdecyf/bufio"
 )
 
 type DomainList struct {
@@ -52,7 +53,7 @@ func (domainList *DomainList) judge(url *URL) (domainType DomainType) {
 	if !config.JudgeByIP {
 		return domainTypeProxy
 	}
-
+	debug.Printf("judging by ip")
 	var ip string
 	isIP, isPrivate := hostIsIP(url.Host)
 	if isIP {
@@ -72,9 +73,11 @@ func (domainList *DomainList) judge(url *URL) (domainType DomainType) {
 
 	if ipShouldDirect(ip) {
 		domainList.add(url.Host, domainTypeDirect)
+		debug.Printf("host or domain should direct")
 		return domainTypeDirect
 	} else {
 		domainList.add(url.Host, domainTypeProxy)
+		debug.Printf("host or domain should using proxy")
 		return domainTypeProxy
 	}
 }

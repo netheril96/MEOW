@@ -5,11 +5,9 @@ package main
 
 import (
 	"bufio"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -18,11 +16,11 @@ import (
 
 // use china ip list database by ipip.net
 const (
-	apnicFile = "https://github.com/17mon/china_ip_list/raw/master/china_ip_list.txt"
+	chinaIPListFile = "https://github.com/17mon/china_ip_list/raw/master/china_ip_list.txt"
 )
 
 func main() {
-	resp, err := http.Get(apnicFile)
+	resp, err := http.Get(chinaIPListFile)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +52,7 @@ func main() {
 			panic(err)
 		}
 		startList = append(startList, strconv.FormatUint(uint64(ipLong), 10))
-		countList = append(countList, count)
+		countList = append(countList, strconv.FormatUint(uint64(count), 10))
 	}
 
 	file, err := os.OpenFile("chinaip_data.go", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
@@ -73,7 +71,7 @@ func main() {
 	fmt.Fprintln(file, ",\n	}")
 }
 
-func cidrCalc(mask string) (string, error) {
+/* func cidrCalc(mask string) (string, error) {
 	i, _ := strconv.Atoi(mask)
 	if i > 32 {
 		return "", errors.New("Invalid Mask")
@@ -102,4 +100,4 @@ func ipToUint32(ipstr string) (uint32, error) {
 		return 0, errors.New("Not IPv4")
 	}
 	return binary.BigEndian.Uint32(ip), nil
-}
+} */
