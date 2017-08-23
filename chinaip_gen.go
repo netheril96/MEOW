@@ -5,9 +5,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -71,15 +73,14 @@ func main() {
 	fmt.Fprintln(file, ",\n	}")
 }
 
-/* func cidrCalc(mask string) (string, error) {
-	i, _ := strconv.Atoi(mask)
-	if i > 32 {
-		return "", errors.New("Invalid Mask")
+func cidrCalc(mask string) (uint, error) {
+	i, err := strconv.Atoi(mask)
+	if err != nil || i > 32 {
+		return 0, errors.New("Invalid Mask")
 	}
 	p := 32 - i
-	res := intPow2(p)
-	str := strconv.Itoa(res)
-	return str, nil
+	res := uint(intPow2(p))
+	return res, nil
 }
 
 func intPow2(p int) int {
@@ -100,4 +101,4 @@ func ipToUint32(ipstr string) (uint32, error) {
 		return 0, errors.New("Not IPv4")
 	}
 	return binary.BigEndian.Uint32(ip), nil
-} */
+}

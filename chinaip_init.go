@@ -1,3 +1,5 @@
+//go:generate go run chinaip_gen.go
+
 package main
 
 import (
