@@ -54,9 +54,10 @@ type Config struct {
 	DirectFile string // direct sites specified by user
 	ProxyFile  string // sites using proxy specified by user
 	RejectFile string
+	CNIPFile   string
 
 	// not configurable in config file
-	PrintVer        bool
+	PrintVer bool
 
 	// not config option
 	saveReqLine bool // for http and meow parent, should save request line from client
@@ -76,6 +77,7 @@ func initConfig(rcFile string) {
 	config.DirectFile = path.Join(config.dir, directFname)
 	config.ProxyFile = path.Join(config.dir, proxyFname)
 	config.RejectFile = path.Join(config.dir, rejectFname)
+	config.CNIPFile = path.Join(config.dir, CNIPFname)
 
 	config.JudgeByIP = true
 
