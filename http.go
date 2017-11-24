@@ -709,7 +709,7 @@ func parseResponse(sv *serverConn, r *Request, rp *Response) (err error) {
 			// Use chunked encoding to pass content back to client.
 			debug.Println("add chunked encoding to close connection response", r, rp)
 			rp.raw.WriteString(fullHeaderTransferEncoding)
-		} else {
+		} else if !(rp.Status == 304 || rp.Status == 204) {
 			debug.Println("add content-length 0 to close connection response", r, rp)
 			rp.raw.WriteString("Content-Length: 0\r\n")
 		}
