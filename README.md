@@ -23,13 +23,7 @@
 
 ## 获取
 
-- **OS X, Linux:** 执行以下命令（也可用于更新）
-
-        curl -L git.io/meowproxy | bash
-
-  环境变量 `MEOW_INSTALLDIR` 可以指定安装的路径，若该环境变量不是目录则询问用户
-- **Windows:** [下载地址](https://github.com/renzhn/MEOW/tree/gh-pages/dist/windows/)
-- **从源码安装:** 安装 [Go](http://golang.org/doc/install)，然后 `go get github.com/renzhn/MEOW`
+- **从源码安装:** 安装 [Go](http://golang.org/doc/install)，然后 `go get github.com/netheril96/MEOW`
 
 ## 配置
 
@@ -64,7 +58,6 @@
 
 直接连接的域名列表保存在 `~/.meow/direct` (OS X, Linux) 或 `direct.txt` (Windows)
 
-
 匹配域名**按 . 分隔的后两部分**或者**整个域名**，例子：
 
 -  `baidu.com` => `*.baidu.com`
@@ -82,6 +75,8 @@
 ## 致谢
 
 - @cyfdecyf - COW author
+- @renzhn - Original MEOW author
 - Github - Github Student Pack
 - https://www.pandafan.org/pac/index.html - Domain White List
 - https://github.com/Leask/Flora_Pac - CN IP Data
+- https://github.com/17mon/china_ip_list - CN IP Data
