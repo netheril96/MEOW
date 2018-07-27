@@ -31,7 +31,11 @@ func newDomainList() *DomainList {
 
 func (domainList *DomainList) judge(url *URL) (domainType DomainType) {
 	debug.Printf("judging host: %s", url.Host)
-	if domainList.Domain[url.Host] == domainTypeReject || domainList.Domain[url.Domain] == domainTypeReject {
+	domainList.Lock()
+	hostDomainType := domainList.Domain[url.Host]
+	domainDomainType := domainList.Domain[url.Domain]
+	domainList.Unlock()
+	if hostDomainType == domainTypeReject || domainDomainType == domainTypeReject {
 		debug.Printf("host or domain should reject")
 		return domainTypeReject
 	}
@@ -41,11 +45,11 @@ func (domainList *DomainList) judge(url *URL) (domainType DomainType) {
 	if url.Domain == "" { // simple host or private ip
 		return domainTypeDirect
 	}
-	if domainList.Domain[url.Host] == domainTypeDirect || domainList.Domain[url.Domain] == domainTypeDirect {
+	if hostDomainType == domainTypeDirect || domainDomainType == domainTypeDirect {
 		debug.Printf("host or domain should direct")
 		return domainTypeDirect
 	}
-	if domainList.Domain[url.Host] == domainTypeProxy || domainList.Domain[url.Domain] == domainTypeProxy {
+	if hostDomainType == domainTypeProxy || domainDomainType == domainTypeProxy {
 		debug.Printf("host or domain should using proxy")
 		return domainTypeProxy
 	}
